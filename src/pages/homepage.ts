@@ -36,9 +36,9 @@ export class HomePage extends BasePage {
     private categoriesContainer = this.page.locator('#cat');
     private categoryElements = {
         links: this.categoriesContainer.locator('#itemc'),
-        phonesCategory: this.categoriesContainer.locator('#itemc').nth(0),
-        laptopsCategory: this.categoriesContainer.locator('#itemc').nth(1),
-        monitorsCategory: this.categoriesContainer.locator('#itemc').nth(2),
+        phonesCategory: this.page.locator('a.list-group-item', { hasText: 'Phones' }),
+        laptopsCategory: this.page.locator('a.list-group-item', { hasText: 'Laptops' }),
+        monitorsCategory: this.page.locator('a.list-group-item', { hasText: 'monitors' }),
     };
 
         // Products
@@ -59,21 +59,57 @@ export class HomePage extends BasePage {
         await expect(this.page).toHaveURL(url);
     }
 
-    public async clickLink(category: 'phones' | 'laptops' | 'monitors') {
-        if (category === 'phones') {
-            await this.categoryElements.phonesCategory.click();
-        } else if (category === 'laptops') {
-            await this.categoryElements.laptopsCategory.click();
-        } else if (category === 'monitors') {
-            await this.categoryElements.monitorsCategory.click();
-        }
-        }
-
-
-   
     
+    productsSorted = [
+        {
+            category: 'phones',
+            items: ['Samsung galaxy s6', 'Nokia lumia 1520', 'Nexus 6', 'Samsung galaxy s7', 'Iphone 6 32gb', 'Sony xperia z5', 'HTC One M9']
+        },
+        {
+            category: 'laptops',
+            items: ['Sony vaio i5', 'Sony vaio i7', 'MacBook air', 'Dell i7 8gb', '2017 Dell 15.6 Inch', 'MacBook Pro']
+        },
+        {
+            category: 'monitors',
+            items: ['Apple monitor 24', 'ASUS Full HD']
+        }
+    ];   
+    
+   
+    public async clickLink () {
+        const categories = [this.categoryElements.phonesCategory,  this.categoryElements.laptopsCategory,  this.categoryElements.monitorsCategory];
+        for (let i=0; i < categories.length; i++) {
+            const categoryName = i === 0 ? 'phones' : i === 1 ? 'laptops' : 'monitors';
+            
+            await categories[i].click();
+            await this.page.waitForTimeout(1000); 
 
+            await this.page.waitForSelector('.card', { state: 'visible' });
+            console.log(`Sorting by ${categoryName}`);
+            
+            await this.page.waitForLoadState('networkidle');
 
+            const productsElements = await this.productElements.cards.allTextContents();
+            console.log(`Collecting all products in ${categoryName}`);
+            
+            
+            const displayedProducts = productsElements.map(product => product.split('$')[0].trim());
+            if (displayedProducts.length > 0) {
+                console.log(`I've got those products: ${displayedProducts}`);
+            }
 
+            const sortedIsValid = this.productsSorted[i].items.every(product => displayedProducts.includes(product));
+            if (sortedIsValid) {
+                console.log(`YES! ${categoryName} is valid!`);
+            } else {
+                console.log(`WARNING: Espected ${this.productsSorted[i].items.filter(product => !displayedProducts.includes(product))}`);
+            }
 
+            console.log('\n');
+            await this.page.waitForTimeout(1000);
+        }
+    }
+
+    
+    
 }

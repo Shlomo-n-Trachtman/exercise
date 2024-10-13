@@ -9,4 +9,6 @@ test('demoblaze', async ({ page }) => {
   const homePage = new HomePage(page);
   await homePage.navigate(web_url.webUrl);
   await homePage.validateUrl(web_url.webUrl);
+  await homePage.clickLink();
+
 });
