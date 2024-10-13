@@ -4,18 +4,18 @@ export abstract class BasePage {
     constructor(protected page: Page) {}
 
     // Navbar
-    private navbar = this.page.locator('#nava');
-    private navbarElements = {
+    readonly navbar = this.page.locator('#nava');
+    readonly navbarElements = {
         navbarx: this.navbar.locator('#narvbarx'),
         navbarButton: this.navbar.locator('button.navbar-toggler[data-target="#navbarExample"][aria-label="Toggle navigation"]'),
-        homeLink: this.navbar.locator('li.nav-item.active a.nav-link'),
-        contactLink: this.navbar.locator('a.nav-link[data-toggle="modal"]'),
-        aboutUsLink: this.navbar.locator('a.nav-link[data-toggle="modal"]'),
-        cartLink: this.navbar.locator('a#cartur'),
-        loginLink: this.navbar.locator('a#login2'),
+        homeLink: this.page.locator('a.nav-link:has-text("Home")'),
+        contactLink: this.page.locator('a.nav-link:has-text("Contact")'),
+        aboutUsLink: this.page.locator('a.nav-link:has-text("About us")'),
+        cartLink: this.page.locator('a.nav-link:has-text("Cart")'),
+        loginLink: this.page.locator('a.nav-link:has-text("Log in")'),
+        signUpLink: this.page.locator('a.nav-link:has-text("Sign up")'),
         logoutLink: this.navbar.locator('a#logout2'),
-        userNameLink: this.navbar.locator('a#nameofuser'),
-        signUpLink: this.navbar.locator('a#signin2'),
+        userNameLink: this.navbar.locator('a#nameofuser')
     };
 
 
@@ -24,8 +24,8 @@ export abstract class BasePage {
     
 
     // Example Modal
-    private exampleModal = this.page.locator('#exampleModal');
-    private exampleModalElements = {
+    readonly exampleModal = this.page.locator('#exampleModal');
+    readonly exampleModalElements = {
         title: this.exampleModal.locator('.modal-title'),
         closeButton: this.exampleModal.locator('.close'),
         emailLabel: this.exampleModal.locator('label[for="recipient-email"]'),
@@ -35,12 +35,12 @@ export abstract class BasePage {
         messageLabel: this.exampleModal.locator('label[for="message-text"]'),
         messageTextArea: this.exampleModal.locator('#message-text'),
         closeModalButton: this.exampleModal.locator('button.btn.btn-secondary'),
-        sendMessageButton: this.exampleModal.locator('button.btn.btn-primary[onclick="send()"]'),
+        sendMessageButton: this.exampleModal.locator('button.btn.btn-primary:has-text("Send message")')
     };
 
     // Sign In Modal
-    private signInModal = this.page.locator('#signInModal');
-    private signInModalElements = {
+    readonly signInModal = this.page.locator('#signInModal');
+    readonly signInModalElements = {
         title: this.signInModal.locator('.modal-title'),
         closeButton: this.signInModal.locator('.close'),
         usernameLabel: this.signInModal.locator('label[for="sign-username"]'),
@@ -53,7 +53,7 @@ export abstract class BasePage {
     };
 
     // Log In Modal
-    private logInModal = this.page.locator('#logInModal');
+    readonly logInModal = this.page.locator('#logInModal');
     private logInModalElements = {
         title: this.logInModal.locator('.modal-title'),
         closeButton: this.logInModal.locator('.close'),
@@ -65,8 +65,11 @@ export abstract class BasePage {
         closeModalButton: this.logInModal.locator('button.btn.btn-secondary'),
         logInButton: this.logInModal.locator('button.btn.btn-primary[onclick="logIn()"]'),
     };
+    
 
     // Video Modal
+    readonly videoModal = this.page.locator('#videoModal');
+
         // Modal Header for About Us Modal
     private aboutUsModalHeader = this.page.locator('.modal-header');
     private aboutUsModalHeaderElements = {
@@ -113,5 +116,4 @@ export abstract class BasePage {
     //Methods
     public abstract navigate(url: string): Promise<void>;
     public abstract validateUrl(url: string): Promise<void>;
-    public abstract clickLink(locator: string): Promise<void>;
 }

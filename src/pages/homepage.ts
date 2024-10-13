@@ -76,7 +76,7 @@ export class HomePage extends BasePage {
     ];   
     
    
-    public async clickLink () {
+    public async sorting () {
         const categories = [this.categoryElements.phonesCategory,  this.categoryElements.laptopsCategory,  this.categoryElements.monitorsCategory];
         for (let i=0; i < categories.length; i++) {
             const categoryName = i === 0 ? 'phones' : i === 1 ? 'laptops' : 'monitors';
@@ -110,6 +110,149 @@ export class HomePage extends BasePage {
         }
     }
 
+
     
+
+    public async click_aboutUs() {
+        const aboutUsLink = this.navbarElements.aboutUsLink;
+        await aboutUsLink.click();
+        console.log('Clicking on: About us')
+        await this.videoModal.waitFor({ state: 'visible' });
+        await this.page.waitForTimeout(1000); 
+        console.log('Validation modal visibility')
+        const isVisible = await this.videoModal.isVisible();
+        if (isVisible) {
+            console.log('The modal is visible');
+        } else {
+            console.log('The modal is not visible');
+        }
+        console.log('Closing modal\n')
+        await this.videoModal.locator('button.close').click();
+    }
+
+
+    public async click_navbarLinks(links: 'home' | 'cart') {
+        let link: Locator;
+        let expectedURL: string;
+
+        if (links === 'home') {
+            link = this.navbarElements.homeLink;
+            expectedURL = 'https://www.demoblaze.com/index.html';
+        } else if (links === 'cart') {
+            link = this.navbarElements.cartLink;
+            expectedURL = 'https://www.demoblaze.com/cart.html';
+        } else {
+            throw new Error(`Unsupported link type: ${links}`);
+        }
+        
+        await link.click();
+        await this.page.waitForTimeout(1000);
+        console.log(`Clicking on: ${links.charAt(0).toUpperCase() + links.slice(1)}`);
+
+        await this.page.waitForLoadState('networkidle');
+
+        const currentURL = this.page.url();
+        console.log('Validating the URL');
+
+        if (currentURL === expectedURL) {
+            console.log('URL validation passed! \n');
+        } else {
+            console.log(`URL validation failed! Expected: ${expectedURL}, but got: ${currentURL} \n`);
+        }        
+    }
+
+    public async open_navbarModals(links: 'contact' | 'about us' | 'log in' | 'sign up') {
+        let link: Locator;
+        let modal: Locator;
+    
+        if (links === 'contact') {
+            link = this.navbarElements.contactLink;
+            modal = this.exampleModal;
+        } else if (links === 'about us') {
+            link = this.navbarElements.aboutUsLink;
+            modal = this.videoModal;
+        } else if (links === 'log in') {
+            link = this.navbarElements.loginLink;
+            modal = this.logInModal;
+        } else if (links === 'sign up') {
+            link = this.navbarElements.signUpLink;
+            modal = this.signInModal;
+        } else {
+            throw new Error(`Unsupported link type: ${links}`);
+        }
+    
+        await link.click();
+        console.log(`Clicking on: ${links.charAt(0).toUpperCase() + links.slice(1)}`);
+        
+        await modal.waitFor({ state: 'visible' });
+        await this.page.waitForTimeout(1000); 
+    
+        console.log('Validation modal visibility');
+        const isVisible = await modal.isVisible();
+        if (isVisible) {
+            console.log('The modal is visible');
+        } else {
+            console.log('The modal is not visible');
+        }
+    
+        console.log('Closing modal\n');
+        await modal.locator('button.close').click();
+    }
+
+    public async click_contact() {
+        const contactLink = this.navbarElements.contactLink;
+        await contactLink.click();
+        console.log('Clicking on: Contact')
+        await this.exampleModal.waitFor({ state: 'visible' });
+
+        console.log('Validation modal visibility')
+        const isVisible = await this.exampleModal.isVisible();
+        if (isVisible) {
+            console.log('The modal is visible');
+        } else {
+            console.log('The modal is not visible');
+        }
+
+        const emailInput = this.exampleModalElements.emailInput;
+        await emailInput.fill('example@demoblaze.com');
+        console.log(`Filling email input`);
+
+        const nameInput = this.exampleModalElements.nameInput;
+        await nameInput.fill('John Smith');
+        console.log(`Filling name input`);
+
+        const messageInput = this.exampleModalElements.messageTextArea;
+        await messageInput.fill('Hello there!');
+        console.log(`Filling message input`);       
+
+        console.log('Sending message')
+        await this.page.waitForTimeout(1000); 
+
+        this.page.on('dialog', async dialog => {
+            console.log('Accepting alert')
+            
+            await this.page.waitForTimeout(5000); 
+            await dialog.dismiss(); 
+
+            
+    
+        });
+
+        const sendMessage = this.exampleModalElements.sendMessageButton;
+        await sendMessage.click();
+        console.log('Message sent\n');
+    }
+    
+
+
+    
+    
+    
+
+
+
+    
+
+
     
 }

@@ -9,6 +9,14 @@ test('demoblaze', async ({ page }) => {
   const homePage = new HomePage(page);
   await homePage.navigate(web_url.webUrl);
   await homePage.validateUrl(web_url.webUrl);
-  await homePage.clickLink();
-
+  /* 
+  await homePage.sorting();
+  await homePage.click_navbarLinks('home');
+  await homePage.click_navbarLinks('cart');
+  await homePage.open_navbarModals('contact');
+  await homePage.open_navbarModals('about us');
+  await homePage.open_navbarModals('log in');
+  await homePage.open_navbarModals('sign up');
+  */
+  await homePage.click_contact();
 });
