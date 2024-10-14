@@ -2,7 +2,6 @@ import { Page, Locator, expect } from '@playwright/test';
 import { faker } from '@faker-js/faker';
 import { BasePage } from './basePage';
 import { HomePage } from './homepage';
-import { console } from 'inspector';
 
 
 
@@ -46,12 +45,9 @@ export class CartPage extends BasePage {
     // Validating the order
     public async validateOrder() {
         const orderDetail = await this.productOrdered.allTextContents();
-        console.log('ORDER: ' + orderDetail);
-        console.log('CHOSEN: ' + HomePage.chosenProducts);
         for (let i = 0; i < HomePage.chosenProducts.length; i++) {
             const expectedProduct = HomePage.chosenProducts[i];
             const actualProduct = orderDetail[i];
-            console.log(actualProduct, expectedProduct);
             
             if (expectedProduct === actualProduct) {
                 console.log(`Product match at index ${i}: ${expectedProduct}`);
@@ -85,7 +81,8 @@ export class CartPage extends BasePage {
 
     public async click_placeOrder() {
         await this.placeOrder.click();
-        await this.page.waitForTimeout(1000); 
+        await this.page.waitForTimeout(300); 
+
 
         const modalIsVisible = await this.placeOrderModal.isVisible();
         if (modalIsVisible) {
