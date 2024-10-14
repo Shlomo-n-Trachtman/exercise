@@ -51,6 +51,13 @@ export class HomePage extends BasePage {
         getProductCard: (index: number) => this.productsContainer.locator('.card').nth(index),
     };
 
+    // Product name
+    readonly productName = this.page.locator('.name');
+
+    // Add product to cart
+    readonly addToCartButton = this.page.locator('a.btn.btn-success:has-text("Add to cart")');
+    
+
     public async navigate(url: string) {
         await this.page.goto(url);
     }
@@ -192,13 +199,14 @@ export class HomePage extends BasePage {
         if (isVisible) {
             console.log('The modal is visible');
         } else {
-            console.log('The modal is not visible');
+            console.log('The modal is NOT visible');
         }
     
         console.log('Closing modal\n');
         await modal.locator('button.close').click();
     }
 
+    // Send a message by 'Contact'
     public async click_contact() {
         const contactLink = this.navbarElements.contactLink;
         await contactLink.click();
@@ -228,31 +236,59 @@ export class HomePage extends BasePage {
         console.log('Sending message')
         await this.page.waitForTimeout(1000); 
 
-        this.page.on('dialog', async dialog => {
-            console.log('Accepting alert')
-            
-            await this.page.waitForTimeout(5000); 
-            await dialog.dismiss(); 
-
-            
-    
-        });
-
         const sendMessage = this.exampleModalElements.sendMessageButton;
         await sendMessage.click();
         console.log('Message sent\n');
     }
-    
 
 
-    
-    
-    
+    public static chosenProducts: string[] = [];
+
+    // Select random products
+    public async addRandomProduct() {
+        const productCount = await this.productElements.cards.count();
+
+        // Choose a random product
+        const randomIndex = Math.floor(Math.random() * productCount);
+        const randomProduct = this.productElements.getProductCard(randomIndex);
+        
+        // Click on the product
+        await randomProduct.click();        
+        const nameOfProduct = await this.productName.innerText(); 
+        console.log(`${nameOfProduct} is chosen`);
+
+        HomePage.chosenProducts.push(nameOfProduct);
+        
+        console.log('CHOSEN: ' + HomePage.chosenProducts);
 
 
 
-    
+        // Add to cart
+        await this.addToCartButton.waitFor({ state: 'visible' });
+        
+        await this.addToCartButton.click();
+        console.log(`${nameOfProduct} added to cart`);
 
+        // Back to homePage
+        await this.page.waitForTimeout(2000); 
+        await this.click_navbarLinks('home');
+        console.log('Navigate back to home page');
+    }
 
+    // Adding from random products into cart
+    public async addProductToCart(proNum: number = 2) {
+
+        for (let i = 0; i < proNum; i++) {
+            await this.addRandomProduct();
+            await this.page.waitForTimeout(1000);
+        }
+        
+        // Navigate to cartPage
+        await this.click_navbarLinks('cart');
+        console.log('Navigate to cart page');
+        await this.page.waitForLoadState('networkidle');
+        await this.page.waitForTimeout(2000);
+
+    }
     
 }
